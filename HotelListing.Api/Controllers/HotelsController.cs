@@ -34,7 +34,7 @@ namespace HotelListing.Api.Controllers
             return Ok(hotel);
         }
 
-        // POST api/<HotelsController>
+        // POST api/<HotelsController> agregre un cmabio para probar git
         [HttpPost]
         public ActionResult<Hotel> Post([FromBody] Hotel newHotel)
         {
