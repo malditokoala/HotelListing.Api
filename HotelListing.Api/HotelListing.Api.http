@@ -37,3 +37,77 @@ Content-Type: application/json
 
 
 ###
+
+
+
+GET {{HotelListing.Api_HostAddress}}/api/countries
+
+###
+
+POST {{HotelListing.Api_HostAddress}}/api/countries
+Content-Type: application/json
+
+
+{
+  "name": "Test Country",
+  "shortName": "TC"
+}
+###
+@id=2
+DELETE {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
+
+###
+@id=1
+GET {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
+
+###
+@id=3
+PUT {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
+Content-Type: application/json
+
+{
+  "id": 3,
+  "name": "Mexico",
+  "shortName": "MX"
+}
+
+###
+
+
+### hoteles
+
+GET {{HotelListing.Api_HostAddress}}/api/hotels
+
+###
+
+POST {{HotelListing.Api_HostAddress}}/api/hotels
+Content-Type: application/json
+
+ {
+    "Name": "Test Hotel",
+    "Address": "Calle 11",
+    "rating": 4.8,
+    "countryId": 3
+ }
+###
+
+DELETE {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
+
+###
+@id=3
+GET {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
+
+###
+@id=2
+PUT {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
+Content-Type: application/json
+
+ {
+   "Id": 2,
+    "Name": "Hotel America",
+    "Address": "Calle 20",
+    "rating": 3.5,
+    "countryId": 3
+ }
+
+###
