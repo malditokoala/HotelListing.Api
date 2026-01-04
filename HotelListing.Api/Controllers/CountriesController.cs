@@ -21,7 +21,9 @@ public class CountriesController(HotelListingDgContext context) : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Country>> GetCountry(int id)
     {
-        var country = await context.Countries.FindAsync(id);
+        var country = await context.Countries
+            .Include(x=>x.Hotels)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (country == null)
         {

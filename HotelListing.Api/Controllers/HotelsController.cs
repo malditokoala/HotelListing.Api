@@ -13,7 +13,8 @@ public class HotelsController(HotelListingDgContext context) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
     {
-        var hotels = await context.Hotels.ToListAsync();
+        var hotels = await context.Hotels.ToListAsync(); //.Include(h=>h.Country).ToListAsync();
+
         return hotels;
     }
 
@@ -21,7 +22,7 @@ public class HotelsController(HotelListingDgContext context) : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Hotel>> GetHotel(int id)
     {
-        var hotel = await context.Hotels.FindAsync(id);
+        var hotel = await context.Hotels.Include(h => h.Country).FirstOrDefaultAsync(i=>i.Id == id);
 
         if (hotel == null)
         {
