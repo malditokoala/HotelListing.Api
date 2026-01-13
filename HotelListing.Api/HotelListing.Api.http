@@ -8,10 +8,10 @@ POST {{HotelListing.Api_HostAddress}}/api/hotels
 Content-Type: application/json
 
  {
-    "id": 3,
     "name": "Hotel Ana",
     "address": "Calle 25",
     "rating": 3.8
+    c
   }
 
 ###
@@ -25,14 +25,15 @@ GET {{HotelListing.Api_HostAddress}}/api/hotels/1
 
 ###
 
-PUT {{HotelListing.Api_HostAddress}}/api/hotels/3
+PUT {{HotelListing.Api_HostAddress}}/api/hotels/1
 Content-Type: application/json
 
 {
-    "id": 3,
+    "id": 1,
     "name": "Hotel Santa Ana",
-    "address": "Calle 25",
-    "rating": 3.8
+    "address": "Calle 25 esquina",
+    "rating": 4.1,
+    "CountryId": 3
   }
 
 

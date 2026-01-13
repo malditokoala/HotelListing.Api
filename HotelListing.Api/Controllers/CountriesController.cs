@@ -1,4 +1,6 @@
 ﻿using HotelListing.Api.Data;
+using HotelListing.Api.DTOs.Country;
+using HotelListing.Api.DTOs.Hotel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,37 +13,65 @@ public class CountriesController(HotelListingDgContext context) : ControllerBase
 
     // GET: api/Countries
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Country>>> GetCountries()
+    public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
     {
-        var countries = await context.Countries.ToListAsync();
-        return countries;
+        var countries =await context.Countries
+            .Select(c=> new GetCountryDto
+            (
+                c.Id,
+                c.Name,
+                c.ShortName
+            ))
+            .ToListAsync();
+        return Ok(countries);
     }
 
     // GET: api/Countries/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Country>> GetCountry(int id)
+    public async Task<ActionResult<GetCountryDto>> GetCountry(int id)
     {
         var country = await context.Countries
+            .Where(c=>c.Id==id)
             .Include(x=>x.Hotels)
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .Select(c=> new GetCountryDto
+            (
+                c.Id,
+                c.Name,
+                c.ShortName,
+                c.Hotels.Select(h=> new GetHotelSlimDto
+                (
+                    h.Id,
+                    h.Name,
+                    h.Address,
+                    h.Rating
+                )).ToList()
+            )).FirstOrDefaultAsync();
 
         if (country == null)
         {
             return NotFound();
         }
 
-        return country;
+        return Ok(country);
     }
 
     // PUT: api/Countries/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutCountry(int id, Country country)
+    public async Task<IActionResult> PutCountry(int id, UpdateCountryDto countryDto)
     {
-        if (id != country.Id)
+        if (id != countryDto.Id)
         {
             return BadRequest();
         }
+
+        var country = await context.Countries.FindAsync(id);
+        if (country == null)
+        {
+            return NotFound();
+        }
+        country.Name = countryDto.Name;
+        country.ShortName = countryDto.ShortName;
 
         context.Entry(country).State = EntityState.Modified;
 
@@ -67,10 +97,23 @@ public class CountriesController(HotelListingDgContext context) : ControllerBase
     // POST: api/Countries
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Country>> PostCountry(Country country)
+    public async Task<ActionResult<Country>> PostCountry(CreateCountryDto countryDto)
     {
+        var country = new Country
+        {
+            Name = countryDto.Name,
+            ShortName = countryDto.ShortName
+        };
         context.Countries.Add(country);
         await context.SaveChangesAsync();
+
+        var resultDto = new GetCountryDto
+        (
+            country.Id,
+            country.Name,
+            country.ShortName,
+            []
+        );
 
         return CreatedAtAction("GetCountry", new { id = country.Id }, country);
     }
