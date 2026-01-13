@@ -115,7 +115,7 @@ public class CountriesController(HotelListingDgContext context) : ControllerBase
             []
         );
 
-        return CreatedAtAction("GetCountry", new { id = country.Id }, country);
+        return CreatedAtAction("GetCountry", new { id = country.Id }, resultDto);
     }
 
     // DELETE: api/Countries/5
