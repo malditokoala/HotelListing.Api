@@ -7,7 +7,7 @@ namespace HotelListing.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class HotelsController(HotelListingDgContext context) : ControllerBase
+public class HotelsController(HotelListingDbContext context) : ControllerBase
 {
 
     // GET: api/Hotels
