@@ -13,7 +13,7 @@ public class HotelsController(IHotelsService hotelsService) : ControllerBase
 
     // GET: api/Hotels
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetHotelsDto>>> GetHotels()
+    public async Task<ActionResult<IEnumerable<GetHotelDto>>> GetHotels()
     {
         var hotels = await hotelsService.GetHotelsAsync();
 
@@ -43,7 +43,23 @@ public class HotelsController(IHotelsService hotelsService) : ControllerBase
         {
             return BadRequest();
         }
-        await hotelsService.UpdateHotelAsync(id, hotelDto);
+        try
+        {
+            await hotelsService.UpdateHotelAsync(id, hotelDto);
+
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            var hotelExists = await hotelsService.HotelExistsAsync(id);
+            if (!hotelExists)
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
 
         return NoContent();
     }
@@ -55,7 +71,7 @@ public class HotelsController(IHotelsService hotelsService) : ControllerBase
     {
         var hotel = await hotelsService.CreateHotelAsync(hotelDto);
 
-        return CreatedAtAction("GetHotel", new { id = hotel.Id }, hotelDto);
+        return CreatedAtAction("GetHotel", new { id = hotel.Id }, hotel);
     }
 
     // DELETE: api/Hotels/5

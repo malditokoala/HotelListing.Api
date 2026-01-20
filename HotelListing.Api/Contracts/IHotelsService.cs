@@ -7,7 +7,8 @@ public interface IHotelsService
     Task<GetHotelDto> CreateHotelAsync(CreateHotelDto hotelDto);
     Task DeleteHotelAsync(int id);
     Task<GetHotelDto?> GetHotelAsync(int id);
-    Task<List<GetHotelsDto>> GetHotelsAsync();
+    Task<List<GetHotelDto>> GetHotelsAsync();
     Task<bool> HotelExistsAsync(int id);
-    Task<bool> UpdateHotelAsync(int id, UpdateHotelDto hotelDto);
+    Task<bool> HotelExistsAsync(string name);
+    Task UpdateHotelAsync(int id, UpdateHotelDto hotelDto);
 }

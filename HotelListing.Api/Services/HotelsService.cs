@@ -8,16 +8,17 @@ namespace HotelListing.Api.Services
 {
     public class HotelsService(HotelListingDbContext context) : IHotelsService
     {
-        public async Task<List<GetHotelsDto>> GetHotelsAsync()
+        public async Task<List<GetHotelDto>> GetHotelsAsync()
         {
             return await context.Hotels
             .Include(h => h.Country)
-            .Select(h => new GetHotelsDto(
+            .Select(h => new GetHotelDto(
                 h.Id,
                 h.Name,
                 h.Address,
                 h.Rating,
-                h.Country.Id
+                h.CountryId,
+                h.Country!.Name
             ))
             .ToListAsync();
         }
@@ -31,12 +32,13 @@ namespace HotelListing.Api.Services
                     h.Name,
                     h.Address,
                     h.Rating,
+                    h.CountryId,
                     h.Country!.Name
                 )).FirstOrDefaultAsync();
             return hotel ?? null;
         }
 
-        public async Task<bool> UpdateHotelAsync(int id, UpdateHotelDto hotelDto)
+        public async Task UpdateHotelAsync(int id, UpdateHotelDto hotelDto)
         {
             var hotel = await context.Hotels.FindAsync(id) ?? throw new KeyNotFoundException("Hotel not found");
 
@@ -44,11 +46,10 @@ namespace HotelListing.Api.Services
             hotel.Address = hotelDto.Address;
             hotel.Rating = hotelDto.Rating;
             hotel.CountryId = hotelDto.CountryId;
+
+            context.Entry(hotel).State = EntityState.Modified;
             context.Hotels.Update(hotel);
-
             await context.SaveChangesAsync();
-
-            return true;
         }
 
         public async Task<GetHotelDto> CreateHotelAsync(CreateHotelDto hotelDto)
@@ -67,21 +68,25 @@ namespace HotelListing.Api.Services
                 hotel.Name,
                 hotel.Address,
                 hotel.Rating,
-                (await context.Countries.FindAsync(hotel.CountryId))!.Name
+                hotel.CountryId,
+                (await context.Countries.FindAsync(hotel.CountryId))!.Name  // o string.Empty
             );
         }
 
         public async Task DeleteHotelAsync(int id)
         {
-            var hotel = await context.Hotels.FindAsync(id) ?? throw new KeyNotFoundException("Hotel not found");
-            context.Hotels.Remove(hotel);
-            await context.SaveChangesAsync();
+            var hotel = await context.Hotels.Where(q => q.Id == id).ExecuteDeleteAsync();
+                
         }
 
 
         public async Task<bool> HotelExistsAsync(int id)
         {
             return await context.Hotels.AnyAsync(e => e.Id == id);
+        }
+        public async Task<bool> HotelExistsAsync(string name)
+        {
+            return await context.Hotels.AnyAsync(e => e.Name == name);
         }
     }
 }
